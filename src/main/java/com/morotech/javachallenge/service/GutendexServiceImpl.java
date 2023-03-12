@@ -16,7 +16,12 @@ public class GutendexServiceImpl implements GutendexService {
     }
 
     @Override
-    public GutendexDTO searchBook(String bookTitle, Long page) {
-        return gutendexFeignClient.searchBookBy(page, bookTitle);
+    public GutendexDTO searchBooks(String bookTitle, Long page) {
+        return gutendexFeignClient.searchBooksBy(page, bookTitle);
+    }
+
+    @Override
+    public GutendexDTO findBookBy(Long id) {
+        return gutendexFeignClient.findBookBy(id);
     }
 }

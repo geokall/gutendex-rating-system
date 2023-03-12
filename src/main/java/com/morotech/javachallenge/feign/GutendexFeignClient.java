@@ -13,5 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface GutendexFeignClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/books")
-    GutendexDTO searchBookBy(@RequestParam(required = false) Long page, @RequestParam String search);
+    GutendexDTO searchBooksBy(@RequestParam(required = false) Long page, @RequestParam String search);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/books")
+    GutendexDTO findBookBy(@RequestParam Long ids);
+
 }

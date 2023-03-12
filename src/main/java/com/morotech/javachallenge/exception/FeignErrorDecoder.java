@@ -4,7 +4,7 @@ import feign.Response;
 import feign.codec.ErrorDecoder;
 import org.springframework.http.HttpStatus;
 
-import static com.morotech.javachallenge.utils.MoroConstant.FEIGN_GENERIC_EXCEPTION;
+import static com.morotech.javachallenge.utils.MoroConstant.*;
 
 public class FeignErrorDecoder implements ErrorDecoder {
 
@@ -13,11 +13,11 @@ public class FeignErrorDecoder implements ErrorDecoder {
         HttpStatus responseStatus = HttpStatus.valueOf(response.status());
 
         if (responseStatus.is5xxServerError()) {
-            return new MoroBadRequestException("Something went wrong with gutendex");
+            return new MoroBadRequestException(FEIGN_5XX_ERROR);
         } else if (responseStatus.is4xxClientError()) {
-            return new MoroNotFoundException("Failed to retrieve data from gutendex");
+            return new MoroNotFoundException(FEIGN_4XX_ERROR);
         } else {
-            return new Exception("Generic exception");
+            return new Exception(FEIGN_GENERIC_EXCEPTION);
         }
     }
 }

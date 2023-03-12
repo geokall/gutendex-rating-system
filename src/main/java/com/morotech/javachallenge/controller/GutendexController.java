@@ -1,7 +1,6 @@
 package com.morotech.javachallenge.controller;
 
 import com.morotech.javachallenge.dto.GutendexDTO;
-import com.morotech.javachallenge.exception.MoroNotFoundException;
 import com.morotech.javachallenge.service.GutendexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class GutendexController {
     @GetMapping("/search-book")
     public ResponseEntity<GutendexDTO> searchBook(@RequestParam String bookTitle,
                                                   @RequestParam(required = false) Long page) {
-        GutendexDTO response = gutendexService.searchBook(bookTitle, page);
+        GutendexDTO response = gutendexService.searchBooks(bookTitle, page);
 
         return ResponseEntity.ok().body(response);
     }
