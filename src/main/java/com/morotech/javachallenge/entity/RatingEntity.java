@@ -28,8 +28,8 @@ public class RatingEntity implements Serializable {
     @Column(name = "review", columnDefinition = "text")
     private String review;
 
-    @Column(name = "month")
-    private int month;
+    @Column(name = "month", nullable = false)
+    private Integer month;
 
     @Override
     public boolean equals(Object o) {

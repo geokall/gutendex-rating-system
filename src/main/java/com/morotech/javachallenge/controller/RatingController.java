@@ -1,5 +1,6 @@
 package com.morotech.javachallenge.controller;
 
+import com.morotech.javachallenge.dto.BookAverageDTO;
 import com.morotech.javachallenge.dto.BookDetailsDTO;
 import com.morotech.javachallenge.dto.GutendexDTO;
 import com.morotech.javachallenge.dto.RatingDTO;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import java.util.List;
 
 @RestController
@@ -41,6 +41,13 @@ public class RatingController {
     @GetMapping("/fetch-top-books/{limit}")
     public ResponseEntity<List<BookProjectionDTO>> fetchTopBooks(@PathVariable Long limit) {
         List<BookProjectionDTO> response = ratingService.fetchTopBooksBy(limit);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/fetch-per-month/{id}")
+    public ResponseEntity<BookAverageDTO> fetchPerMonth(@PathVariable Long id) {
+        BookAverageDTO response = ratingService.fetchBookAvgPerMonth(id);
 
         return ResponseEntity.ok().body(response);
     }

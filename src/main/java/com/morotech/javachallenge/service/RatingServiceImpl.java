@@ -1,17 +1,17 @@
 package com.morotech.javachallenge.service;
 
-import com.morotech.javachallenge.dto.BookDetailsDTO;
-import com.morotech.javachallenge.dto.RatingDTO;
-import com.morotech.javachallenge.dto.ResultDTO;
+import com.morotech.javachallenge.dto.*;
 import com.morotech.javachallenge.entity.RatingEntity;
 import com.morotech.javachallenge.exception.MoroBadRequestException;
 import com.morotech.javachallenge.exception.MoroNotFoundException;
+import com.morotech.javachallenge.projection.BookAverageProjectionDTO;
 import com.morotech.javachallenge.projection.BookProjectionDTO;
 import com.morotech.javachallenge.repository.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,20 +43,14 @@ public class RatingServiceImpl implements RatingService {
     public BookDetailsDTO findBookDetails(Long id) {
         ResultDTO book = gutendexService.findBookBy(id);
 
-        List<RatingEntity> listOfRatings = fetchRatingsBy(book.getId());
+        List<RatingEntity> listOfRatings = fetchRatings(book.getId());
 
         return toBookDetailsDTO(book, listOfRatings);
     }
 
     @Override
-    public List<RatingEntity> fetchRatingsBy(Long id) {
-        List<RatingEntity> listOfRatings = ratingRepository.findByBookId(id);
-
-        if (listOfRatings.isEmpty()) {
-            throw new MoroNotFoundException(BOOK_NOT_FOUND);
-        }
-
-        return listOfRatings;
+    public List<RatingEntity> fetchRatings(Long id) {
+        return findRatingBookBy(id);
     }
 
     @Override
@@ -66,6 +60,23 @@ public class RatingServiceImpl implements RatingService {
         }
 
         return ratingRepository.fetchTopBooksBy(limit);
+    }
+
+    @Override
+    public BookAverageDTO fetchBookAvgPerMonth(Long id) {
+        Long bookId = validateBookExistenceInDb(id);
+
+        var listOfAverageRatingsPerMonth = ratingRepository.fetchAverageRatingsPerMonth(id);
+
+        List<AveragePerMonthDTO> ratingsPerMonth = listOfAverageRatingsPerMonth.stream()
+                .map(this::toAveragePerMonthDTO)
+                .collect(Collectors.toList());
+
+        BookAverageDTO dto = new BookAverageDTO();
+        dto.setId(bookId);
+        dto.setRatingsPerMonth(ratingsPerMonth);
+
+        return dto;
     }
 
 
@@ -119,5 +130,35 @@ public class RatingServiceImpl implements RatingService {
         int month = currentDate.getMonth().getValue();
 
         rating.setMonth(month);
+    }
+
+    private List<RatingEntity> findRatingBookBy(Long id) {
+        List<RatingEntity> listOfRatings = ratingRepository.findByBookId(id);
+
+        if (listOfRatings.isEmpty()) {
+            throw new MoroNotFoundException(GUTENDEX_BOOK_NOT_FOUND);
+        }
+
+        return listOfRatings;
+    }
+
+    private AveragePerMonthDTO toAveragePerMonthDTO(BookAverageProjectionDTO bookRating) {
+        AveragePerMonthDTO avgDTO = new AveragePerMonthDTO();
+        avgDTO.setAverageRating(bookRating.getAverageRating());
+
+        Optional.of(bookRating.getMonth())
+                .map(month -> Month.of(month).name())
+                .ifPresent(avgDTO::setMonth);
+
+        return avgDTO;
+    }
+
+    private Long validateBookExistenceInDb(Long id) {
+        //fetching top instead of fetching list, to improve performance
+        return ratingRepository.findTopByBookId(id)
+                .map(RatingEntity::getBookId)
+                .orElseThrow(() -> {
+                    throw new MoroNotFoundException(DB_BOOK_NOT_FOUND);
+                });
     }
 }
