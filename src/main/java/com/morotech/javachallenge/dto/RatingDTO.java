@@ -14,7 +14,7 @@ public class RatingDTO {
     private Long bookId;
 
     @NotNull(message = "Book rate is mandatory")
-    @Min(value = 1, message = "Minimum rating value is 1")
+    @Min(value = 0, message = "Minimum rating value is 0")
     @Max(value = 5, message = "Maximum rating value is 5")
     private Integer rating;
 

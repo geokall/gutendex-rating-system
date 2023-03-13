@@ -91,8 +91,8 @@ public class RatingServiceImpl implements RatingService {
 
     private List<String> fetchRatings(List<RatingEntity> listOfRatings) {
         return listOfRatings.stream()
-                .filter(Objects::nonNull)
                 .map(RatingEntity::getReview)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
