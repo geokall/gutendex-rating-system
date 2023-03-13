@@ -23,7 +23,7 @@ public class RatingEntity implements Serializable {
     private Long bookId;
 
     @Column(name = "rating", nullable = false)
-    private Integer rating;
+    private Double rating;
 
     @Column(name = "review", columnDefinition = "text")
     private String review;

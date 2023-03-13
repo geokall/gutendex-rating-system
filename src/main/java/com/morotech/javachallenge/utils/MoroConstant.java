@@ -14,4 +14,6 @@ public class MoroConstant {
 
     public static final String GENERIC_ERROR = "Error occurred, ";
 
+    public static final String LIMIT_ERROR = "Limit range between 1 and 10";
+
 }

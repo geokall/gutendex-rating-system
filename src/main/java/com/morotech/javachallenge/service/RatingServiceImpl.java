@@ -4,7 +4,9 @@ import com.morotech.javachallenge.dto.BookDetailsDTO;
 import com.morotech.javachallenge.dto.RatingDTO;
 import com.morotech.javachallenge.dto.ResultDTO;
 import com.morotech.javachallenge.entity.RatingEntity;
+import com.morotech.javachallenge.exception.MoroBadRequestException;
 import com.morotech.javachallenge.exception.MoroNotFoundException;
+import com.morotech.javachallenge.projection.BookProjectionDTO;
 import com.morotech.javachallenge.repository.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,15 @@ public class RatingServiceImpl implements RatingService {
         }
 
         return listOfRatings;
+    }
+
+    @Override
+    public List<BookProjectionDTO> fetchTopBooksBy(Long limit) {
+        if (limit < 1 || limit > 10) {
+            throw new MoroBadRequestException(LIMIT_ERROR);
+        }
+
+        return ratingRepository.fetchTopBooksBy(limit);
     }
 
 

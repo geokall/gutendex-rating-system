@@ -16,7 +16,7 @@ public class RatingDTO {
     @NotNull(message = "Book rate is mandatory")
     @Min(value = 0, message = "Minimum rating value is 0")
     @Max(value = 5, message = "Maximum rating value is 5")
-    private Integer rating;
+    private Double rating;
 
     @Length(max = 1000, message = "Maximum review characters are up to 1.000")
     private String review;
