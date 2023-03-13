@@ -7,6 +7,7 @@ import com.morotech.javachallenge.exception.MoroNotFoundException;
 import com.morotech.javachallenge.projection.BookAverageProjectionDTO;
 import com.morotech.javachallenge.projection.BookProjectionDTO;
 import com.morotech.javachallenge.repository.RatingRepository;
+import com.morotech.javachallenge.utils.MoroUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.morotech.javachallenge.utils.MoroConstant.*;
+import static com.morotech.javachallenge.utils.MoroUtil.toMonthNameBy;
 
 @Service
 public class RatingServiceImpl implements RatingService {
@@ -43,14 +45,9 @@ public class RatingServiceImpl implements RatingService {
     public BookDetailsDTO findBookDetails(Long id) {
         ResultDTO book = gutendexService.findBookBy(id);
 
-        List<RatingEntity> listOfRatings = fetchRatings(book.getId());
+        List<RatingEntity> listOfDbRatingInfo = fetchDatabaseRatingInfo(id);
 
-        return toBookDetailsDTO(book, listOfRatings);
-    }
-
-    @Override
-    public List<RatingEntity> fetchRatings(Long id) {
-        return findRatingBookBy(id);
+        return toBookDetailsDTO(book, listOfDbRatingInfo);
     }
 
     @Override
@@ -93,7 +90,7 @@ public class RatingServiceImpl implements RatingService {
         ratingRepository.save(rating);
     }
 
-    private BookDetailsDTO toBookDetailsDTO(ResultDTO book, List<RatingEntity> listOfRatings) {
+    private BookDetailsDTO toBookDetailsDTO(ResultDTO book, List<RatingEntity> listOfDbRatingInfo) {
         BookDetailsDTO dto = new BookDetailsDTO();
 
         dto.setId(book.getId());
@@ -102,24 +99,24 @@ public class RatingServiceImpl implements RatingService {
         dto.setLanguages(book.getLanguages());
         dto.setDownloadCount(book.getDownloadCount());
 
-        Double averageRating = fetchAverageRating(listOfRatings);
+        Double averageRating = fetchAverageRating(listOfDbRatingInfo);
         dto.setAverageRating(averageRating);
 
-        List<String> reviews = fetchRatings(listOfRatings);
+        List<String> reviews = fetchReviews(listOfDbRatingInfo);
         dto.setReviews(reviews);
 
         return dto;
     }
 
-    private List<String> fetchRatings(List<RatingEntity> listOfRatings) {
-        return listOfRatings.stream()
+    private List<String> fetchReviews(List<RatingEntity> listOfDbRatingInfo) {
+        return listOfDbRatingInfo.stream()
                 .map(RatingEntity::getReview)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private Double fetchAverageRating(List<RatingEntity> listOfRatings) {
-        return listOfRatings.stream()
+    private Double fetchAverageRating(List<RatingEntity> listOfDbRatingInfo) {
+        return listOfDbRatingInfo.stream()
                 .mapToDouble(RatingEntity::getRating)
                 .average()
                 .orElse(Double.NaN);
@@ -132,11 +129,11 @@ public class RatingServiceImpl implements RatingService {
         rating.setMonth(month);
     }
 
-    private List<RatingEntity> findRatingBookBy(Long id) {
+    private List<RatingEntity> fetchDatabaseRatingInfo(Long id) {
         List<RatingEntity> listOfRatings = ratingRepository.findByBookId(id);
 
         if (listOfRatings.isEmpty()) {
-            throw new MoroNotFoundException(GUTENDEX_BOOK_NOT_FOUND);
+            throw new MoroNotFoundException(DB_BOOK_NOT_FOUND);
         }
 
         return listOfRatings;
@@ -147,7 +144,7 @@ public class RatingServiceImpl implements RatingService {
         avgDTO.setAverageRating(bookRating.getAverageRating());
 
         Optional.of(bookRating.getMonth())
-                .map(month -> Month.of(month).name())
+                .map(MoroUtil::toMonthNameBy)
                 .ifPresent(avgDTO::setMonth);
 
         return avgDTO;

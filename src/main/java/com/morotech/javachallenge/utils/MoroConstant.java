@@ -18,4 +18,6 @@ public class MoroConstant {
 
     public static final String DB_BOOK_NOT_FOUND = "Book not found on database";
 
+    public static final String UNKNOWN_MONTH = "Unknown month";
+
 }

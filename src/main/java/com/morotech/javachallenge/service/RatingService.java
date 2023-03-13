@@ -15,8 +15,6 @@ public interface RatingService {
 
     BookDetailsDTO findBookDetails(Long id);
 
-    List<RatingEntity> fetchRatings(Long id);
-
     List<BookProjectionDTO> fetchTopBooksBy(Long limit);
 
     BookAverageDTO fetchBookAvgPerMonth(Long id);
