@@ -17,9 +17,9 @@ public class GutendexController {
         this.gutendexService = gutendexService;
     }
 
-    @GetMapping("/search-book")
-    public ResponseEntity<GutendexDTO> searchBook(@RequestParam String bookTitle,
-                                                  @RequestParam(required = false) Long page) {
+    @GetMapping("/search-books")
+    public ResponseEntity<GutendexDTO> searchBooks(@RequestParam String bookTitle,
+                                                   @RequestParam(required = false) Long page) {
         GutendexDTO response = gutendexService.searchBooks(bookTitle, page);
 
         return ResponseEntity.ok().body(response);

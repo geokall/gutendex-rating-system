@@ -1,6 +1,6 @@
 package com.morotech.javachallenge.service;
 
-import com.morotech.javachallenge.dto.GutendexDTO;
+import com.morotech.javachallenge.dto.BookDetailsDTO;
 import com.morotech.javachallenge.dto.RatingDTO;
 import com.morotech.javachallenge.dto.ResultDTO;
 import com.morotech.javachallenge.entity.RatingEntity;
@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.morotech.javachallenge.utils.MoroConstant.*;
 
@@ -29,10 +32,36 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public void rateBook(RatingDTO dto) {
-        ResultDTO book = findBook(dto.getBookId());
+        ResultDTO book = gutendexService.findBookBy(dto.getBookId());
 
+        saveRating(dto, book.getId());
+    }
+
+    @Override
+    public BookDetailsDTO findBookDetails(Long id) {
+        ResultDTO book = gutendexService.findBookBy(id);
+
+        List<RatingEntity> listOfRatings = fetchRatingsBy(book.getId());
+
+        return toBookDetailsDTO(book, listOfRatings);
+    }
+
+    @Override
+    public List<RatingEntity> fetchRatingsBy(Long id) {
+        List<RatingEntity> listOfRatings = ratingRepository.findByBookId(id);
+
+        if (listOfRatings.isEmpty()) {
+            throw new MoroNotFoundException(BOOK_NOT_FOUND);
+        }
+
+        return listOfRatings;
+    }
+
+
+    private void saveRating(RatingDTO dto, Long id) {
         RatingEntity rating = new RatingEntity();
-        rating.setBookId(book.getId());
+        rating.setBookId(id);
+
         rating.setRating(dto.getRating());
         rating.setReview(dto.getReview());
 
@@ -42,18 +71,36 @@ public class RatingServiceImpl implements RatingService {
         ratingRepository.save(rating);
     }
 
-    private ResultDTO findBook(Long id) {
-        GutendexDTO book = gutendexService.findBookBy(id);
+    private BookDetailsDTO toBookDetailsDTO(ResultDTO book, List<RatingEntity> listOfRatings) {
+        BookDetailsDTO dto = new BookDetailsDTO();
 
-        if (book.getResults().isEmpty()) {
-            throw new MoroNotFoundException(BOOK_NOT_FOUND);
-        }
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setAuthors(book.getAuthors());
+        dto.setLanguages(book.getLanguages());
+        dto.setDownloadCount(book.getDownloadCount());
 
-        return book.getResults().stream()
-                .findFirst()
-                .orElseThrow(() -> {
-                    throw new MoroNotFoundException(BOOK_RESULTS_NOT_FOUND);
-                });
+        Double averageRating = fetchAverageRating(listOfRatings);
+        dto.setAverageRating(averageRating);
+
+        List<String> reviews = fetchRatings(listOfRatings);
+        dto.setReviews(reviews);
+
+        return dto;
+    }
+
+    private List<String> fetchRatings(List<RatingEntity> listOfRatings) {
+        return listOfRatings.stream()
+                .filter(Objects::nonNull)
+                .map(RatingEntity::getReview)
+                .collect(Collectors.toList());
+    }
+
+    private Double fetchAverageRating(List<RatingEntity> listOfRatings) {
+        return listOfRatings.stream()
+                .mapToDouble(RatingEntity::getRating)
+                .average()
+                .orElse(Double.NaN);
     }
 
     private void setCurrentMonth(RatingEntity rating) {

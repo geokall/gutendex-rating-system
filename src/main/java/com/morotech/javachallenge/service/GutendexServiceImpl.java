@@ -1,9 +1,14 @@
 package com.morotech.javachallenge.service;
 
 import com.morotech.javachallenge.dto.GutendexDTO;
+import com.morotech.javachallenge.dto.ResultDTO;
+import com.morotech.javachallenge.exception.MoroNotFoundException;
 import com.morotech.javachallenge.feign.GutendexFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static com.morotech.javachallenge.utils.MoroConstant.BOOK_NOT_FOUND;
+import static com.morotech.javachallenge.utils.MoroConstant.BOOK_RESULTS_NOT_FOUND;
 
 @Service
 public class GutendexServiceImpl implements GutendexService {
@@ -21,7 +26,17 @@ public class GutendexServiceImpl implements GutendexService {
     }
 
     @Override
-    public GutendexDTO findBookBy(Long id) {
-        return gutendexFeignClient.findBookBy(id);
+    public ResultDTO findBookBy(Long id) {
+        GutendexDTO book = gutendexFeignClient.findBookBy(id);
+
+        if (book.getResults().isEmpty()) {
+            throw new MoroNotFoundException(BOOK_NOT_FOUND);
+        }
+
+        return book.getResults().stream()
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new MoroNotFoundException(BOOK_RESULTS_NOT_FOUND);
+                });
     }
 }
