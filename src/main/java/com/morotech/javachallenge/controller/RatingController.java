@@ -22,7 +22,7 @@ public class RatingController {
 
     @GetMapping("/book")
     public ResponseEntity<GutendexDTO> rateBook(@Valid @RequestBody RatingDTO dto) {
-        ratingService.rate(dto);
+        ratingService.rateBook(dto);
 
         return ResponseEntity.ok().build();
     }

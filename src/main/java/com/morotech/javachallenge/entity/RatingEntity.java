@@ -25,7 +25,7 @@ public class RatingEntity implements Serializable {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @Column(name = "review")
+    @Column(name = "review", columnDefinition = "text")
     private String review;
 
     @Column(name = "month")

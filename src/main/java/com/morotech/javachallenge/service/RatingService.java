@@ -4,5 +4,5 @@ import com.morotech.javachallenge.dto.RatingDTO;
 
 public interface RatingService {
 
-    void rate(RatingDTO dto);
+    void rateBook(RatingDTO dto);
 }

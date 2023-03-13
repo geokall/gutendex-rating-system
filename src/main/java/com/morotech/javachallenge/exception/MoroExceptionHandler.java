@@ -15,6 +15,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.morotech.javachallenge.utils.MoroConstant.GENERIC_ERROR;
+
 @ControllerAdvice
 public class MoroExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -60,18 +62,18 @@ public class MoroExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<MoroResponseError> handleGenericException(Exception e) {
         LOGGER.error(e.getMessage());
 
-        String error = "There was an error. Please contact your administrator " + e.getMessage();
+        String error = GENERIC_ERROR + e.getMessage();
 
         MoroResponseError responseError = new MoroResponseError(error);
 
-        return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                               HttpHeaders headers,
-                                                               HttpStatus status,
-                                                               WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult()

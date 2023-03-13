@@ -17,7 +17,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
         } else if (responseStatus.is4xxClientError()) {
             return new MoroNotFoundException(FEIGN_4XX_ERROR);
         } else {
-            return new Exception(FEIGN_GENERIC_EXCEPTION);
+            return new Exception(FEIGN_GENERIC_ERROR);
         }
     }
 }

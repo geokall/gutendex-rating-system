@@ -4,7 +4,6 @@ import com.morotech.javachallenge.dto.GutendexDTO;
 import com.morotech.javachallenge.dto.RatingDTO;
 import com.morotech.javachallenge.dto.ResultDTO;
 import com.morotech.javachallenge.entity.RatingEntity;
-import com.morotech.javachallenge.exception.MoroBadRequestException;
 import com.morotech.javachallenge.exception.MoroNotFoundException;
 import com.morotech.javachallenge.repository.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public void rate(RatingDTO dto) {
+    public void rateBook(RatingDTO dto) {
         ResultDTO book = findBook(dto.getBookId());
 
         RatingEntity rating = new RatingEntity();
@@ -38,7 +37,6 @@ public class RatingServiceImpl implements RatingService {
         rating.setReview(dto.getReview());
 
         Optional.ofNullable(dto.getMonth())
-                .map(this::handleInvalidMonth)
                 .ifPresentOrElse(rating::setMonth, () -> setCurrentMonth(rating));
 
         ratingRepository.save(rating);
@@ -56,14 +54,6 @@ public class RatingServiceImpl implements RatingService {
                 .orElseThrow(() -> {
                     throw new MoroNotFoundException(BOOK_RESULTS_NOT_FOUND);
                 });
-    }
-
-    private Integer handleInvalidMonth(Integer month) {
-        if (month < 1 || month > 12) {
-            throw new MoroBadRequestException(INVALID_MONTH);
-        }
-
-        return month;
     }
 
     private void setCurrentMonth(RatingEntity rating) {
