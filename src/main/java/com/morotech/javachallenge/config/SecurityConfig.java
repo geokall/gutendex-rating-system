@@ -1,4 +1,4 @@
-package com.morotech.javachallenge.configuration;
+package com.morotech.javachallenge.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,7 +2,6 @@ package com.morotech.javachallenge.controller;
 
 import com.morotech.javachallenge.dto.BookAverageDTO;
 import com.morotech.javachallenge.dto.BookDetailsDTO;
-import com.morotech.javachallenge.dto.GutendexDTO;
 import com.morotech.javachallenge.dto.RatingDTO;
 import com.morotech.javachallenge.projection.BookProjectionDTO;
 import com.morotech.javachallenge.service.RatingService;
@@ -25,10 +24,11 @@ public class RatingController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<GutendexDTO> rateBook(@Valid @RequestBody RatingDTO dto) {
-        ratingService.rateBook(dto);
+    public ResponseEntity<BookDetailsDTO> rateBook(@Valid @RequestBody RatingDTO dto) {
+        //return the same DTO fetchBookDetails method for caching purposes
+        BookDetailsDTO response = ratingService.rateBook(dto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/fetch-book-details/{id}")

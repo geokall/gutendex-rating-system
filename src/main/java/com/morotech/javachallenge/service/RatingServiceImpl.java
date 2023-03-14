@@ -9,6 +9,8 @@ import com.morotech.javachallenge.projection.BookProjectionDTO;
 import com.morotech.javachallenge.repository.RatingRepository;
 import com.morotech.javachallenge.utils.MoroUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,13 +37,19 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public void rateBook(RatingDTO dto) {
+    @CachePut(value = CACHE_BOOK_DETAILS, key = "#dto.bookId")
+    public BookDetailsDTO rateBook(RatingDTO dto) {
         ResultDTO book = gutendexService.findBookBy(dto.getBookId());
 
         saveRating(dto, book.getId());
+
+        List<RatingEntity> listOfDbRatingInfo = fetchDatabaseRatingInfo(book.getId());
+
+        return toBookDetailsDTO(book, listOfDbRatingInfo);
     }
 
     @Override
+    @Cacheable(value = CACHE_BOOK_DETAILS, key = "#id")
     public BookDetailsDTO findBookDetails(Long id) {
         ResultDTO book = gutendexService.findBookBy(id);
 

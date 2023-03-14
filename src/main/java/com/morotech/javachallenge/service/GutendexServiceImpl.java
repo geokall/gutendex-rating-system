@@ -5,10 +5,10 @@ import com.morotech.javachallenge.dto.ResultDTO;
 import com.morotech.javachallenge.exception.MoroNotFoundException;
 import com.morotech.javachallenge.feign.GutendexFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import static com.morotech.javachallenge.utils.MoroConstant.GUTENDEX_BOOK_NOT_FOUND;
-import static com.morotech.javachallenge.utils.MoroConstant.BOOK_RESULTS_NOT_FOUND;
+import static com.morotech.javachallenge.utils.MoroConstant.*;
 
 @Service
 public class GutendexServiceImpl implements GutendexService {
@@ -21,6 +21,7 @@ public class GutendexServiceImpl implements GutendexService {
     }
 
     @Override
+    @Cacheable(value = CACHE_BOOKS)
     public GutendexDTO searchBooks(String bookTitle, Long page) {
         return gutendexFeignClient.searchBooksBy(page, bookTitle);
     }

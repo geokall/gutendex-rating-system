@@ -20,4 +20,8 @@ public class MoroConstant {
 
     public static final String UNKNOWN_MONTH = "Unknown month";
 
+    public static final String CACHE_BOOKS = "books";
+
+    public static final String CACHE_BOOK_DETAILS = "book-details";
+
 }

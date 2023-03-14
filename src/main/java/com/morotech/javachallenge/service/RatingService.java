@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface RatingService {
 
-    void rateBook(RatingDTO dto);
+    BookDetailsDTO rateBook(RatingDTO dto);
 
     BookDetailsDTO findBookDetails(Long id);
 
