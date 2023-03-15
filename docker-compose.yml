@@ -1,19 +1,17 @@
-version: '3'
+version: '3.8'
 services:
 
   moro-db:
-    image: postgres:14
+    image: postgres:14.1-alpine
+    restart: always
     container_name: moro-db
-    expose:
-      - 5432
     ports:
-      - "5466:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=moro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,21 +20,18 @@ services:
       - './create.sql:/docker-entrypoint-initdb.d/create.sql'
 
   moro-api:
-    build:
-      context: .
-      dockerfile: moro-api.Dockerfile
-    container_name: moro-api
+    image: 'geokall/moro-api:latest'
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://hua-db:5466/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://moro-db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "8080:8080"
     depends_on:
       - moro-db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://postgres:5466"]
+      test: [ "CMD", "curl", "-f", "http://postgres:5432" ]
       interval: 30s
       timeout: 10s
       retries: 5
