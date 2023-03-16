@@ -28,4 +28,5 @@
 
 ## OpenAPI available:
 
-[url](http://localhost:8080/swagger-ui/index.html)
+Link available only if server is running
+[available endpoints](http://localhost:8080/swagger-ui/index.html)
