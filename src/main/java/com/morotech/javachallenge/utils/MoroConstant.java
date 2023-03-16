@@ -2,11 +2,9 @@ package com.morotech.javachallenge.utils;
 
 public class MoroConstant {
 
-    public static final String FEIGN_5XX_ERROR = "Server error on gutendex";
+    public static final String FEIGN_BAD_REQUEST = "Bad request from gutendex";
 
-    public static final String FEIGN_4XX_ERROR = "Failed to retrieve data from gutendex";
-
-    public static final String FEIGN_GENERIC_ERROR = "Something went wrong on gutendex";
+    public static final String FEIGN_NOT_FOUND = "Not found from gutendex";
 
     public static final String GUTENDEX_BOOK_NOT_FOUND = "Book not found on gutendex";
 
@@ -23,5 +21,4 @@ public class MoroConstant {
     public static final String CACHE_BOOKS = "books";
 
     public static final String CACHE_BOOK_DETAILS = "book-details";
-
 }
