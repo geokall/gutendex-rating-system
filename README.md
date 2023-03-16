@@ -13,6 +13,13 @@
 - Create a service that, given a book id, returns its average rating per month
 - Provide a high-level system diagram of how you would deploy such a service in a scalable way
 
+## Build steps
+
+```bash
+1. docker build --no-cache -f moro-api.Dockerfile -t geokall/moro-api:latest .
+2. docker push geokall/moro-api:latest
+```
+
 ## How to run
 
 ```bash
