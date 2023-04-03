@@ -14,14 +14,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.morotech.javachallenge.utils.MoroConstant.*;
-import static com.morotech.javachallenge.utils.MoroUtil.toMonthNameBy;
 
 @Service
 public class RatingServiceImpl implements RatingService {
